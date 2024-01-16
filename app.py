@@ -104,10 +104,14 @@ def main():
             try:
                 with chat_container:
                     st.chat_message("User").write(st.session_state.user_question)
+
+                    # Print Ollama server host and port before making the request
+                    print(f"Ollama Server Host: {ollama_server_host}, Ollama Server Port: {ollama_server_port}")
+
                     llm_response = llm_chain.run(st.session_state.user_question)
                     st.session_state.user_question = ""
             except requests.exceptions.ConnectionError as e:
-                st.error(f"Error connecting to the server: {e}")
+                st.error(f"Error connecting to the server: {e}. Make sure the Ollama server is running and accessible.")
 
     if chat_history.messages != []:
         with chat_container:
