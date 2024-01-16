@@ -8,6 +8,8 @@ from langchain.prompts import PromptTemplate
 # from langchain.vectorstores import Chroma
 from langchain.llms import Ollama
 import yaml
+import logging
+import requests
 
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
@@ -35,6 +37,7 @@ def create_llm_chain(llm, chat_prompt, memory):
 def load_normal_chain(chat_history):
     return chatChain(chat_history)
 
+
 class chatChain:
 
     def __init__(self, chat_history):
@@ -44,4 +47,7 @@ class chatChain:
         self.llm_chain = create_llm_chain(llm, chat_prompt, self.memory)
 
     def run(self, user_input):
-        return self.llm_chain.run(human_input = user_input, history=self.memory.chat_memory.messages ,stop=["Human:"])
+        try:
+            return self.llm_chain.run(human_input=user_input, history=self.memory.chat_memory.messages, stop=["Human:"])
+        except requests.exceptions.ConnectionError as e:
+            logging.error(f"Error connecting to the server: {e}")

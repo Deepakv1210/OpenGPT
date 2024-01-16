@@ -10,9 +10,24 @@ from langchain.memory import StreamlitChatMessageHistory
 from utils import save_chat_history_json, get_timestamp, load_chat_history_json
 import yaml
 import os
+import requests
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 with open("config.yaml", "r") as f:
     config = yaml.safe_load(f)
+
+# Use environment variables for server configuration
+ollama_server_host = os.environ.get("OLLAMA_SERVER_HOST", "localhost")
+ollama_server_port = os.environ.get("OLLAMA_SERVER_PORT", "11434")
+
+# ... (rest of the code remains the same)
+
+# Replace 'localhost' and '11434' with environment variables
+ollama_server_host = os.environ.get("OLLAMA_SERVER_HOST", "localhost")
+ollama_server_port = os.environ.get("OLLAMA_SERVER_PORT", "11434")
 
 def load_chain(chat_history):
     return load_normal_chain(chat_history)
@@ -82,6 +97,17 @@ def main():
                 llm_response=llm_chain.run(st.session_state.user_question)
                 # st.chat_message("ai").write(llm_response)
                 st.session_state.user_question=""
+
+
+    if send_button or st.session_state.send_input:
+        if st.session_state.user_question != "":
+            try:
+                with chat_container:
+                    st.chat_message("User").write(st.session_state.user_question)
+                    llm_response = llm_chain.run(st.session_state.user_question)
+                    st.session_state.user_question = ""
+            except requests.exceptions.ConnectionError as e:
+                st.error(f"Error connecting to the server: {e}")
 
     if chat_history.messages != []:
         with chat_container:
