@@ -21,7 +21,7 @@ if prompt!="":
         response = llm.predict(prompt)
     else:
         llm = Ollama(
-            model="llama2-uncensored:latest", 
+            model="mistral", 
             callback_manager=CallbackManager([FinalStreamingStdOutCallbackHandler()])
         )
         agent = initialize_agent(
