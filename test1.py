@@ -17,7 +17,7 @@ prompt = st.text_input("prompt", value="", key="prompt")
 if prompt!="":
     response = ""
     if not search_internet:
-        llm = Ollama(model="llama2-uncensored:latest") # 👈 stef default
+        llm = Ollama(model="mistral") # 👈 stef default
         response = llm.predict(prompt)
     else:
         llm = Ollama(
